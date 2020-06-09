@@ -1,2 +1,2 @@
 # Recommender
-Simple video recommender, implementating collaborative filtering using jacquard similarity function. 
+Simple video recommender, implementing collaborative filtering using jacquard similarity function. 
