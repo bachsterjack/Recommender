@@ -1,0 +1,10 @@
+user_id,watched_video_id
+user_A,movie_1
+user_A,movie_2
+user_A,movie_3
+user_B,movie_1
+user_B,movie_2
+user_B,movie_3
+user_B,movie_4
+user_C,movie_1
+user_C,movie_1

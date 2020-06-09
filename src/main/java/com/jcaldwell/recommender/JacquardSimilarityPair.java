@@ -1,20 +1,19 @@
 package com.jcaldwell.recommender;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
-
 import java.util.*;
 
 public class JacquardSimilarityPair implements JacquardSimilarity<String> {
-    public Map.Entry<String, HashSet<String>> sampleA;
-    public Map.Entry<String, HashSet<String>> sampleB;
+    public Map.Entry<String, HashSet<String>> videoAUsersWatched;
+    public Map.Entry<String, HashSet<String>> videoBUsersWatched;
     public double coefficient = JacquardSimilarity.DEFAULT_COEFFICIENT;
 
-    public JacquardSimilarityPair(Map.Entry<String, HashSet<String>> sampleA, Map.Entry<String, HashSet<String>> sampleB)
+    public JacquardSimilarityPair(Map.Entry<String, HashSet<String>> videoAUsersWatched,
+                                  Map.Entry<String, HashSet<String>> videoBUsersWatched)
     {
-        Objects.requireNonNull(sampleA, "Sets for comparison must not be null");
-        Objects.requireNonNull(sampleB, "Sets for comparison must not be null");
-        this.sampleA = sampleA;
-        this.sampleB = sampleB;
+        Objects.requireNonNull(videoAUsersWatched, "Sets for comparison must not be null");
+        Objects.requireNonNull(videoBUsersWatched, "Sets for comparison must not be null");
+        this.videoAUsersWatched = videoAUsersWatched;
+        this.videoBUsersWatched = videoBUsersWatched;
     }
 
     public double getCoefficient() {
@@ -22,16 +21,16 @@ public class JacquardSimilarityPair implements JacquardSimilarity<String> {
     }
 
     public String getVideoA() {
-        return this.sampleA.getKey();
+        return this.videoAUsersWatched.getKey();
     }
 
     public String getVideoB() {
-        return this.sampleB.getKey();
+        return this.videoBUsersWatched.getKey();
     }
 
     @Override
     public double jacquardIndex() {
-        this.coefficient = this.jacquardIndexFrom(this.sampleA.getValue(), this.sampleB.getValue());
+        this.coefficient = this.jacquardIndexFrom(this.videoAUsersWatched.getValue(), this.videoBUsersWatched.getValue());
         return this.coefficient;
     }
 

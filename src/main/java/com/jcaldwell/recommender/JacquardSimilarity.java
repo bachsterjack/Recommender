@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface JacquardSimilarity<T>  {
 
-    static final double DEFAULT_COEFFICIENT = 0.0;
+    double DEFAULT_COEFFICIENT = 0.0;
 
     static double jaccardIndex(int intersectionCount, int unionCount) {
         // Not really needed, if data sample includes only movies viewed

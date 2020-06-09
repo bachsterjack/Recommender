@@ -17,12 +17,12 @@ public class Recommender {
 
         String inputFileName = null;
         String outputFileName = "./recommendations.csv";
-        final int maxSimilarities = 3;
+        final int maxSimilaritiesOutput = 3;
 
-        /**
+        /*
          * Parse positional arguments
-         * arg 0 = input CSV file name (full path)
-         * arg 1 = output CSV file name (if not provided, defaults to "./recommendations.csv")
+         * arg 1 = input CSV file name (full path)
+         * arg 2 = output CSV file name (if not provided, defaults to "./recommendations.csv")
          */
         if (args.length == 0) {
             System.out.println("No input or output files specified. Exiting....");
@@ -43,7 +43,7 @@ public class Recommender {
 
         // Calculate Jacquard Coefficients of unique set of watched video pairs
         int numVideos = watchedVideoToUsersMap.size();
-        Map.Entry<String, HashSet<String>>[] videoMapArray = new Map.Entry[numVideos];
+        Map.Entry<String, HashSet<String>>[] videoMapArray = new Map.Entry[watchedVideoToUsersMap.size()];
         videoMapArray = watchedVideoToUsersMap.entrySet().toArray(videoMapArray);
         LinkedHashMap<String, List<JacquardSimilarityPair>> videoSimilarityPairsMap = new LinkedHashMap<>(numVideos);
 
@@ -64,7 +64,7 @@ public class Recommender {
 
         // Reduce similarities to 3 best recommendations for each source video,
         // filtering results where there is at least some viewer similarity -- ie, coefficient > 0)
-        List<JacquardSimilarityPair> highestScoreRecommendations = new ArrayList<>(videoSimilarityPairsMap.size() * maxSimilarities);
+        List<JacquardSimilarityPair> highestScoreRecommendations = new ArrayList<>(videoSimilarityPairsMap.size() * maxSimilaritiesOutput);
         videoSimilarityPairsMap.forEach( (video, pairs) ->
         {
             List<JacquardSimilarityPair> mostSimilarVideos = pairs.stream()
@@ -86,11 +86,10 @@ public class Recommender {
         v = set of user_id (who watched video)
     */
     private static LinkedHashMap<String, HashSet<String>> parseInputCSV(String fileName) {
-        Reader in = null;
         LinkedHashMap<String, HashSet<String>> movies_watchedBy_users = new LinkedHashMap<>();
         System.out.println("Processing input file of user watched videos ...");
         try {
-            in = new FileReader(fileName);
+            Reader in = new FileReader(fileName);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .withIgnoreEmptyLines(true)
@@ -99,7 +98,7 @@ public class Recommender {
             for (CSVRecord record : records) {
                 String userId = record.get("user_id");
                 String videoId = record.get("watched_video_id");
-                HashSet<String> userSet = movies_watchedBy_users.getOrDefault(videoId, new HashSet<String>());
+                HashSet<String> userSet = movies_watchedBy_users.getOrDefault(videoId, new HashSet<>());
                 userSet.add(userId);
                 movies_watchedBy_users.put(videoId, userSet);
             }
@@ -120,9 +119,8 @@ public class Recommender {
      */
     private static void createRecommendationCSV(String outputFileName,
                                                 List<JacquardSimilarityPair> highestScoreRecommendations) {
-        FileWriter out = null;
         try {
-            out = new FileWriter(outputFileName);
+            FileWriter out = new FileWriter(outputFileName);
             CSVPrinter printer = CSVFormat.DEFAULT
                     .withHeader("video_id", "recommended_video_id", "score")
                     .print(out);
