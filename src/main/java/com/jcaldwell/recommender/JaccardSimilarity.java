@@ -3,7 +3,7 @@ package com.jcaldwell.recommender;
 import java.util.Collection;
 import java.util.Set;
 
-public interface JacquardSimilarity<T>  {
+public interface JaccardSimilarity<T>  {
 
     double DEFAULT_COEFFICIENT = 0.0;
 
@@ -15,7 +15,7 @@ public interface JacquardSimilarity<T>  {
         return (double) intersectionCount / (double) unionCount;
     }
 
-    double jacquardIndex();
+    double jaccardIndex();
 
-    double jacquardIndexFrom(Set<T> s1, Set<T> s2);
+    double jaccardIndexFrom(Set<T> s1, Set<T> s2);
 }

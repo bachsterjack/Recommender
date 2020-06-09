@@ -41,40 +41,40 @@ public class Recommender {
         // Parse user-watched videos into video mappings to user sets
         LinkedHashMap<String, HashSet<String>> watchedVideoToUsersMap = parseInputCSV(inputFileName);
 
-        // Calculate Jacquard Coefficients of unique set of watched video pairs
+        // Calculate Jaccard Coefficients of unique set of watched video pairs
         int numVideos = watchedVideoToUsersMap.size();
         Map.Entry<String, HashSet<String>>[] videoMapArray = new Map.Entry[watchedVideoToUsersMap.size()];
         videoMapArray = watchedVideoToUsersMap.entrySet().toArray(videoMapArray);
-        LinkedHashMap<String, List<JacquardSimilarityPair>> videoSimilarityPairsMap = new LinkedHashMap<>(numVideos);
+        LinkedHashMap<String, List<JaccardSimilarityPair>> videoSimilarityPairsMap = new LinkedHashMap<>(numVideos);
 
         // O(N(N-1)/2) unique pairs calculated
         for (int i = 0; i < videoMapArray.length; i++) {
-            List<JacquardSimilarityPair> recommendedPairsForRow = new ArrayList<>(videoMapArray.length - i);
+            List<JaccardSimilarityPair> recommendedPairsForRow = new ArrayList<>(videoMapArray.length - i);
             for (int k = i+1; k < videoMapArray.length; k++) {
-                JacquardSimilarityPair similarityPair = new JacquardSimilarityPair(
+                JaccardSimilarityPair similarityPair = new JaccardSimilarityPair(
                         videoMapArray[i],
                         videoMapArray[k]);
-                similarityPair.jacquardIndex();
+                similarityPair.jaccardIndex();
                 recommendedPairsForRow.add(similarityPair);
             }
-            // Add ith row of (n-i) jacquard similarity pairs
+            // Add ith row of (n-i) jaccard similarity pairs
             videoSimilarityPairsMap.put(videoMapArray[i].getKey(), recommendedPairsForRow);
         }
-        System.out.println("Calculated Jacquard Coefficients of all watched video pairs");
+        System.out.println("Calculated Jaccard Coefficients of all watched video pairs");
 
         // Reduce similarities to 3 best recommendations for each source video,
         // filtering results where there is at least some viewer similarity -- ie, coefficient > 0)
-        List<JacquardSimilarityPair> highestScoreRecommendations = new ArrayList<>(videoSimilarityPairsMap.size() * maxSimilaritiesOutput);
+        List<JaccardSimilarityPair> highestScoreRecommendations = new ArrayList<>(videoSimilarityPairsMap.size() * maxSimilaritiesOutput);
         videoSimilarityPairsMap.forEach( (video, pairs) ->
         {
-            List<JacquardSimilarityPair> mostSimilarVideos = pairs.stream()
-                    .sorted(Comparator.comparing(JacquardSimilarityPair::getCoefficient).reversed())
+            List<JaccardSimilarityPair> mostSimilarVideos = pairs.stream()
+                    .sorted(Comparator.comparing(JaccardSimilarityPair::getCoefficient).reversed())
                     .limit(3)
                     .collect(Collectors.toList());
             highestScoreRecommendations.addAll(mostSimilarVideos);
         });
 
-        System.out.println("Filtered 3 highest recommendations for each video, using Jacquard Coefficients");
+        System.out.println("Filtered 3 highest recommendations for each video, using Jaccard Coefficients");
         createRecommendationCSV(outputFileName, highestScoreRecommendations);
     }
 
@@ -114,11 +114,11 @@ public class Recommender {
     /**
      Create CSV Output file, using Apache Commons CSV.
      Each CSV output header is (video_id, recommended_video_id, score).
-     highestScoreRecommendations - map of videos to highest score JacquardSimilarityPairs.
+     highestScoreRecommendations - map of videos to highest score JaccardSimilarityPairs.
      For each recommendation output CSV row.
      */
     private static void createRecommendationCSV(String outputFileName,
-                                                List<JacquardSimilarityPair> highestScoreRecommendations) {
+                                                List<JaccardSimilarityPair> highestScoreRecommendations) {
         try {
             FileWriter out = new FileWriter(outputFileName);
             CSVPrinter printer = CSVFormat.DEFAULT
